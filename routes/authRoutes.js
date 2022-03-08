@@ -11,7 +11,6 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/User/login" }),
   async (req, res) => {
-    // console.log("redirected", req.user);
     let user = {
       name: req.user.name.givenName,
       email: req.user._json.email,
@@ -26,7 +25,6 @@ router.get(
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "30d" }
     ); // expires in 30 days
-    console.log(`BEARER ${token}`);
     res.cookie("jwt", `BEARER ${token}`);
     const currentuser = await User.findOne({ googleId: user.googleId });
     if (!currentuser) {

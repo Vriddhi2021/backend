@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  coins : {
+    type : Number,
+    default: 200
+  }
 });
 userSchema.plugin(findOrCreate);
 module.exports = mongoose.model("User", userSchema);

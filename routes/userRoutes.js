@@ -16,11 +16,9 @@ router.get("/:id", isAuthenticated, async (req, res) => {
 router.post("/Register", isAuthenticated, async (req, res) => {
   try {
     const id = req.user.data.email;
-    let idstr = JSON.stringify(id).replace("@gmail.com", "");
-    console.log(idstr);
+    let idstr = JSON.stringify(id).replace('@gmail.com', '').split('"').join(''); // Extract User Name from gmail.
     // const id = (await User.count()) + 1;
-    console.log(req.user.data.email);
-    const possibleuser = User.findOne({ googleId: req.user.data.googleId });
+    const possibleuser = await User.findOne({ googleId : req.user.data.googleId });
     if (possibleuser) {
       res.status(400).json({
         status: "Unsuccessful",
