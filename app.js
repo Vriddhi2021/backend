@@ -6,6 +6,7 @@ const passport = require("passport");
 const eventRoutes = require("./routes/eventRoutes");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
+const teamRoutes = require("./routes/teamRoutes");
 const createPassportStrategies = require("./passport.js");
 const isAuthenticated = require("./middlewares/isAuthenticated.js");
 const mongoose = require("mongoose");
@@ -35,6 +36,7 @@ createPassportStrategies(passport);
 app.use("/Auth", authRoutes);
 app.use("/Event", eventRoutes);
 app.use("/User", userRoutes);
+app.use("/Team", teamRoutes);
 // app.use(isAuthenticated);
 
 const port = process.env.PORT || 4000;
