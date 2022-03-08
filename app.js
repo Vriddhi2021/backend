@@ -1,11 +1,46 @@
-const express = require('express');
+const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
+const passport = require("passport");
+const eventRoutes = require("./routes/eventRoutes");
+const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
+const createPassportStrategies = require("./passport.js");
+const isAuthenticated = require("./middlewares/isAuthenticated.js");
+const mongoose = require("mongoose");
 
+require("dotenv").config();
 const app = express();
 
+// Middlewares
+app.use(morgan("dev"));
+app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
+app.use(passport.initialize());
 
-app.use('/test',(req,res) => {
-    res.status(200).json({"test" : "Workingggggggg"});
-})
+mongoose
+  .connect(process.env.DB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    // useCreateIndex: true,
+    // useFindAndModify: true,
+  })
+  .then(console.log("Connected to MongoDB"))
+  .catch((err) => console.log(err));
 
-app.listen(5000);
+createPassportStrategies(passport);
+
+app.use("/Auth", authRoutes);
+app.use("/Event", eventRoutes);
+app.use("/User", userRoutes);
+// app.use(isAuthenticated);
+
+const port = process.env.PORT || 4000;
+
+app.listen(port, () =>
+  console.log(
+    `Server is running at port ${port}. Please visit /api/display to hit the demo endpoint.`
+  )
+);
