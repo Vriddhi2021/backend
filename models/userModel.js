@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
   coins : {
     type : Number,
     default: 200
+  },
+  paidStatus : {
+    type : Boolean,
+    default: false
   }
 });
 userSchema.plugin(findOrCreate);
