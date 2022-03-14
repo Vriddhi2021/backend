@@ -28,10 +28,12 @@ const userSchema = new mongoose.Schema({
   isNitr: {
     type: Boolean,
     required: [true, "IsNitr is required"],
+    default: false,
   },
   nitrMail: {
     type: String,
     trim: true,
+    unique: true,
   },
   participatedEvents: {
     type: Array,
@@ -40,14 +42,14 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  coins : {
-    type : Number,
-    default: 200
+  coins: {
+    type: Number,
+    default: 200,
   },
-  paidStatus : {
-    type : Boolean,
-    default: false
-  }
+  paidStatus: {
+    type: Boolean,
+    default: false,
+  },
 });
 userSchema.plugin(findOrCreate);
 module.exports = mongoose.model("User", userSchema);
