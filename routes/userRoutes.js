@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const isAuthenticated = require("../middlewares/isAuthenticated");
 const User = require("../models/userModel");
+const Otp = require("../models/otpModel");
+const nodemailer = require("nodemailer");
 
 router.get("/:id", isAuthenticated, async (req, res) => {
   try {
@@ -16,9 +18,14 @@ router.get("/:id", isAuthenticated, async (req, res) => {
 router.post("/Register", isAuthenticated, async (req, res) => {
   try {
     const id = req.user.data.email;
-    let idstr = JSON.stringify(id).replace('@gmail.com', '').split('"').join(''); // Extract User Name from gmail.
+    let idstr = JSON.stringify(id)
+      .replace("@gmail.com", "")
+      .split('"')
+      .join(""); // Extract User Name from gmail.
     // const id = (await User.count()) + 1;
-    const possibleuser = await User.findOne({ googleId : req.user.data.googleId });
+    const possibleuser = await User.findOne({
+      googleId: req.user.data.googleId,
+    });
     if (possibleuser) {
       res.status(400).json({
         status: "Unsuccessful",
@@ -30,15 +37,16 @@ router.post("/Register", isAuthenticated, async (req, res) => {
       { uniqueId: idstr },
       { googleId: req.user.data.googleId },
       { registered: true },
+      { email: req.user.data.email },
       req.body
     );
     const newUser = await User.create(newuser);
-    res.status(200).json({
-      status: "Successful",
-      data: {
-        user: newUser,
-      },
-    });
+    if (newUser.isNitr && newUser.nitrMail) {
+      var string = newUser.nitrMail;
+      res.redirect("/User/auth/Email-send?valid=" + string);
+    } else {
+      res.redirect("/");
+    }
   } catch (err) {
     res.status(400).json({
       status: "Unsuccessful",
@@ -69,5 +77,88 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
     });
   }
 });
+router.get("/auth/Email-send", async (req, res) => {
+  try {
+    let passedEmail = req.query.valid;
+    if (passedEmail) {
+      let otpcode = Math.floor(Math.random() * 10000 + 1);
+      const newData = Object.assign(
+        { email: passedEmail },
+        { expireIn: new Date().getTime() + 300 * 1000 },
+        { code: otpcode }
+      );
+      const newOtp = await Otp.create(newData);
+      var transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "jb9086699@gmail.com",
+          pass: "Password##1234",
+        },
+      });
 
+      var mailOptions = {
+        from: "jb9086699@gmail.com",
+        to: `${passedEmail}`,
+        subject: "OTP verification Vriddhi",
+        text: `${otpcode}`,
+      };
+
+      transporter.sendMail(mailOptions, async function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent: " + info.response);
+        }
+      });
+      res.status(200).json({
+        status: "successful",
+        message: err,
+      });
+    } else {
+      res.status(400).json({
+        status: "Unsuccessful",
+        message: err,
+      });
+    }
+  } catch (err) {
+    res.status(400).json({
+      status: "Unsuccessful",
+      message: err,
+    });
+  }
+});
+router.post("/auth/Email-send", async (req, res) => {
+  try {
+    let data = await Otp.find({
+      email: req.query.valid,
+      code: req.body.otpCode,
+    });
+
+    if (data) {
+      let currentTime = new Date().getTime();
+      let diff = data.expireIn - currentTime;
+      if (diff < 0) {
+        res.send("Failed");
+        return;
+      } else {
+        let user = await User.findOne({ nitrMail: req.query.valid });
+
+        if (user) {
+          user.paidStatus = true;
+          user.save();
+          res.status(200).send("Sucess boi");
+          return;
+        } else {
+          res.status(400).send("failed");
+          return;
+        }
+      }
+    }
+  } catch (err) {
+    res.status(400).json({
+      status: "Unsuccessful",
+      message: err,
+    });
+  }
+});
 module.exports = router;
