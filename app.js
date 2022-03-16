@@ -7,6 +7,7 @@ const eventRoutes = require("./routes/eventRoutes");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const teamRoutes = require("./routes/teamRoutes");
+const paymentRoutes = require("./routes/paymentGate");
 const createPassportStrategies = require("./passport.js");
 const mongoose = require("mongoose");
 
@@ -36,7 +37,7 @@ app.use("/Auth", authRoutes);
 app.use("/Event", eventRoutes);
 app.use("/User", userRoutes);
 app.use("/Team", teamRoutes);
-
-const port = process.env.PORT || 4000;
+app.use("/Payment", paymentRoutes);
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => console.log(`Server is running at port ${port}.`));
