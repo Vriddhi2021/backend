@@ -113,7 +113,7 @@ router.put("/:id/register", isAuthenticated, async (req, res) => {
         res.status(403).json("You have already registered for this event");
       }
     } else {
-      res.redirect("http://localhost:3000/User/Register");
+      res.redirect("https://vriddhinitr.com/User/Register");
     }
   } catch (err) {
     res.status(500).json(err);
@@ -136,7 +136,7 @@ router.put("/:id/unregister", isAuthenticated, async (req, res) => {
         res.status(403).json("You did not register for this event");
       }
     } else {
-      res.redirect("http://localhost:3000/User/Register");
+      res.redirect("https://vriddhinitr.com/User/Register");
     }
   } catch (err) {
     res.status(500).json(err);

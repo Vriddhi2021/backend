@@ -9,7 +9,9 @@ router.get(
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/User/login" }),
+  passport.authenticate("google", {
+    failureRedirect: "https://vriddhinitr.com/",
+  }),
   async (req, res) => {
     let user = {
       name: req.user.name.givenName,
@@ -29,9 +31,10 @@ router.get(
     res.cookie("jwt", `BEARER ${token}`);
     const currentuser = await User.findOne({ googleId: user.googleId });
     if (!currentuser) {
-      res.redirect("/User/Register");
+      res.redirect("https://vriddhinitr.com/User/Register");
     } else {
-      res.redirect(`"/User/"+${currentuser.uniqueId}`);
+      // res.redirect(`"/User/"+${currentuser.uniqueId}`);
+      res.redirect("https://vriddhinitr.com/");
     }
   }
 );
