@@ -43,7 +43,7 @@ router.post("/Register", isAuthenticated, async (req, res) => {
     const newUser = await User.create(newuser);
     if (newUser.isNitr && newUser.nitrMail) {
       var string = newUser.nitrMail;
-      res.redirect("/User/auth/Email-send?valid=" + string);
+      res.redirect("/User/auth/otp-verify?valid=" + string);
     } else {
       res.redirect("/");
     }
@@ -77,14 +77,14 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
     });
   }
 });
-router.get("/auth/Email-send", async (req, res) => {
+router.get("/auth/otp-verify", async (req, res) => {
   try {
     let passedEmail = req.query.valid;
     if (passedEmail) {
       let otpcode = Math.floor(Math.random() * 10000 + 1);
       const newData = Object.assign(
         { email: passedEmail },
-        { expireIn: new Date().getTime() + 300 * 1000 },
+        { expireIn: new Date().getTime() + 600 * 1000 },
         { code: otpcode }
       );
       const newOtp = await Otp.create(newData);
@@ -106,28 +106,35 @@ router.get("/auth/Email-send", async (req, res) => {
       transporter.sendMail(mailOptions, async function (error, info) {
         if (error) {
           console.log(error);
+          res.status(400).json({
+            status: "Failed to send email",
+            message: err,
+          });
+          return;
         } else {
           console.log("Email sent: " + info.response);
+          res.status(200).json({
+            status:
+              "OTP successfully sent to your Email. Please check your zimbra mail",
+          });
+          return;
         }
-      });
-      res.status(200).json({
-        status: "successful",
-        message: err,
       });
     } else {
       res.status(400).json({
-        status: "Unsuccessful",
+        status: "Failed to send email",
         message: err,
       });
+      return;
     }
   } catch (err) {
     res.status(400).json({
-      status: "Unsuccessful",
+      status: "No email found",
       message: err,
     });
   }
 });
-router.post("/auth/Email-send", async (req, res) => {
+router.post("/auth/otp-verify", async (req, res) => {
   try {
     let data = await Otp.find({
       email: req.query.valid,
@@ -138,7 +145,7 @@ router.post("/auth/Email-send", async (req, res) => {
       let currentTime = new Date().getTime();
       let diff = data.expireIn - currentTime;
       if (diff < 0) {
-        res.send("Failed");
+        res.send("Otp expired");
         return;
       } else {
         let user = await User.findOne({ nitrMail: req.query.valid });
@@ -146,17 +153,26 @@ router.post("/auth/Email-send", async (req, res) => {
         if (user) {
           user.paidStatus = true;
           user.save();
-          res.status(200).send("Sucess boi");
+          res
+            .status(200)
+            .send("Your Zimbra mail was successfully verified.Thank You!");
           return;
         } else {
-          res.status(400).send("failed");
+          res
+            .status(400)
+            .send("Please provide correct OTP details and try again");
           return;
         }
       }
+    } else {
+      res.status(400).json({
+        status: "OTP verification failed",
+        message: err,
+      });
     }
   } catch (err) {
     res.status(400).json({
-      status: "Unsuccessful",
+      status: "OTP verification failed",
       message: err,
     });
   }
