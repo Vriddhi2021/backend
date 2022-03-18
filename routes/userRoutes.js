@@ -21,7 +21,7 @@ router.post("/Register", isAuthenticated, async (req, res) => {
     let idstr = JSON.stringify(id)
       .replace("@gmail.com", "")
       .split('"')
-      .join(""); // Extract User Name from gmail.
+      .join("").toLowerCase(); // Extract User Name from gmail.
     // const id = (await User.count()) + 1;
     const possibleuser = await User.findOne({
       googleId: req.user.data.googleId,
@@ -44,8 +44,10 @@ router.post("/Register", isAuthenticated, async (req, res) => {
     if (newUser.isNitr && newUser.nitrMail) {
       var string = newUser.nitrMail;
       res.redirect("/User/auth/otp-verify?valid=" + string);
+      return;
     } else {
       res.redirect("/");
+      return;
     }
   } catch (err) {
     res.status(400).json({

@@ -26,12 +26,12 @@ router.get(
       { expiresIn: "30d" }
     ); // expires in 30 days
     console.log(token);
-    res.cookie("jwt", `BEARER ${token}`);
+    res.cookie("jwt", `BEARER ${token}`).cookie("uniqueid", `${(req.user._json.email).replace("@gmail.com", "").split('"').join("").toLowerCase()}`);
     const currentuser = await User.findOne({ googleId: user.googleId });
     if (!currentuser) {
       res.redirect("/User/Register");
     } else {
-      res.redirect(`"/User/"+${currentuser.uniqueId}`);
+      res.redirect("https://vriddhinitr.com/");
     }
   }
 );

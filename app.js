@@ -7,9 +7,10 @@ const eventRoutes = require("./routes/eventRoutes");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const teamRoutes = require("./routes/teamRoutes");
-const paymentRoutes = require("./routes/paymentGate");
+const paymentRoutes = require("./routes/paymentRoutes");
 const createPassportStrategies = require("./passport.js");
 const mongoose = require("mongoose");
+const { default: paymentConfirm } = require("./routes/paymentRoutes");
 
 require("dotenv").config();
 const app = express();
