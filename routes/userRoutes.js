@@ -27,10 +27,13 @@ router.post("/Register", isAuthenticated, async (req, res) => {
       googleId: req.user.data.googleId,
     });
     if (possibleuser) {
-      res.status(400).json({
-        status: "Unsuccessful",
-        message: "gmail already exists",
-      });
+      res
+        .status(400)
+        .json({
+          status: "Unsuccessful",
+          message: "gmail already exists",
+        })
+        .redirect("https://vriddhinitr.com/");
       return;
     }
     const newuser = Object.assign(
@@ -43,17 +46,20 @@ router.post("/Register", isAuthenticated, async (req, res) => {
     const newUser = await User.create(newuser);
     if (newUser.isNitr && newUser.nitrMail) {
       var string = newUser.nitrMail;
-      res.redirect("/User/auth/otp-verify?valid=" + string);
-      return;
+      res.redirect(
+        "https://vriddhinitr.com/User/auth/otp-verify?valid=" + string
+      );
     } else {
-      res.redirect("/");
-      return;
+      res.redirect("https://vriddhinitr.com/");
     }
   } catch (err) {
-    res.status(400).json({
-      status: "Unsuccessful",
-      message: err,
-    });
+    res
+      .status(400)
+      .json({
+        status: "Unsuccessful",
+        message: err,
+      })
+      .redirect("https://vriddhinitr.com/register");
   }
 });
 router.patch("/:id", isAuthenticated, async (req, res) => {
@@ -130,10 +136,13 @@ router.get("/auth/otp-verify", async (req, res) => {
       return;
     }
   } catch (err) {
-    res.status(400).json({
-      status: "No email found",
-      message: err,
-    });
+    res
+      .status(400)
+      .json({
+        status: "No email found",
+        message: err,
+      })
+      .redirect("https://vriddhinitr.com/");
   }
 });
 router.post("/auth/otp-verify", async (req, res) => {
@@ -157,12 +166,11 @@ router.post("/auth/otp-verify", async (req, res) => {
           user.save();
           res
             .status(200)
-            .send("Your Zimbra mail was successfully verified.Thank You!");
+            .send("Your Zimbra mail was successfully verified.Thank You!")
+            .redirect("https://vriddhinitr.com/");
           return;
         } else {
-          res
-            .status(400)
-            .send("Please provide correct OTP details and try again");
+          res.status(400).send("Wrong OTP");
           return;
         }
       }
