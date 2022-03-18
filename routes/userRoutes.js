@@ -21,7 +21,7 @@ router.post("/Register", isAuthenticated, async (req, res) => {
     let idstr = JSON.stringify(id)
       .replace("@gmail.com", "")
       .split('"')
-      .join(""); // Extract User Name from gmail.
+      .join("").toLowerCase(); // Extract User Name from gmail.
     // const id = (await User.count()) + 1;
     const possibleuser = await User.findOne({
       googleId: req.user.data.googleId,
