@@ -50,6 +50,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  contact: {
+    type: String,
+    required: [true, "Whatsapp Contaact is required"],
+  },
 });
 userSchema.plugin(findOrCreate);
 module.exports = mongoose.model("User", userSchema);
