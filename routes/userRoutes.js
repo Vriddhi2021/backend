@@ -21,20 +21,18 @@ router.post("/Register", isAuthenticated, async (req, res) => {
     let idstr = JSON.stringify(id)
       .replace("@gmail.com", "")
       .split('"')
-      .join("").toLowerCase(); // Extract User Name from gmail.
+      .join("")
+      .toLowerCase(); // Extract User Name from gmail.
     // const id = (await User.count()) + 1;
     const possibleuser = await User.findOne({
       googleId: req.user.data.googleId,
     });
     if (possibleuser) {
-      res
-        .status(400)
-        .json({
-          status: "Unsuccessful",
-          message: "gmail already exists",
-        })
-        .redirect("https://vriddhinitr.com/");
-      return;
+      return res.status(400).json({
+        status: "Unsuccessful",
+        message: "gmail already exists",
+      });
+      // .redirect("https://vriddhinitr.com/");
     }
     const newuser = Object.assign(
       { uniqueId: idstr },
@@ -44,22 +42,23 @@ router.post("/Register", isAuthenticated, async (req, res) => {
       req.body
     );
     const newUser = await User.create(newuser);
-    if (newUser.isNitr && newUser.nitrMail) {
-      var string = newUser.nitrMail;
-      res.redirect(
-        "https://vriddhinitr.com/User/auth/otp-verify?valid=" + string
-      );
-    } else {
-      res.redirect("https://vriddhinitr.com/");
-    }
+    return res.status(200).json({
+      message: "Successfully Registered",
+    });
+    // if (newUser.isNitr && newUser.nitrMail) {
+    //   var string = newUser.nitrMail;
+    //   res.redirect(
+    //     "https://vriddhinitr.com/User/auth/otp-verify?valid=" + string
+    //   );
+    // } else {
+    //   res.redirect("https://vriddhinitr.com/");
+    // }
   } catch (err) {
-    res
-      .status(400)
-      .json({
-        status: "Unsuccessful",
-        message: err,
-      })
-      .redirect("https://vriddhinitr.com/register");
+    return res.status(400).json({
+      status: "Unsuccessful",
+      message: err,
+    });
+    // .redirect("https://vriddhinitr.com/register");
   }
 });
 router.patch("/:id", isAuthenticated, async (req, res) => {
@@ -85,14 +84,14 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
     });
   }
 });
-router.get("/auth/otp-verify", async (req, res) => {
+router.post("/auth/otp-verify", async (req, res) => {
   try {
-    let passedEmail = req.query.valid;
+    let passedEmail = req.body.nitrMail;
     if (passedEmail) {
       let otpcode = Math.floor(Math.random() * 10000 + 1);
       const newData = Object.assign(
         { email: passedEmail },
-        { expireIn: new Date().getTime() + 600 * 1000 },
+        { expireIn: new Date().getTime() + 2 * 600 * 1000 },
         { code: otpcode }
       );
       const newOtp = await Otp.create(newData);
@@ -114,41 +113,40 @@ router.get("/auth/otp-verify", async (req, res) => {
       transporter.sendMail(mailOptions, async function (error, info) {
         if (error) {
           console.log(error);
-          res.status(400).json({
+          return res.status(400).json({
             status: "Failed to send email",
-            message: err,
+            message: error,
           });
-          return;
         } else {
           console.log("Email sent: " + info.response);
-          res.status(200).json({
+          return res.status(200).json({
             status:
               "OTP successfully sent to your Email. Please check your zimbra mail",
           });
-          return;
         }
       });
     } else {
-      res.status(400).json({
-        status: "Failed to send email",
+      return res.status(400).json({
+        status: "INVALID EMAIL",
         message: err,
       });
-      return;
     }
   } catch (err) {
-    res
-      .status(400)
-      .json({
-        status: "No email found",
-        message: err,
-      })
-      .redirect("https://vriddhinitr.com/");
+    return (
+      res
+        .status(400)
+        // .json({
+        //   status: "No email found",
+        //   message: err,
+        // })
+        .redirect("https://vriddhinitr.com/")
+    );
   }
 });
-router.post("/auth/otp-verify", async (req, res) => {
+router.post("/auth/otp-verify2", async (req, res) => {
   try {
-    let data = await Otp.find({
-      email: req.query.valid,
+    let data = await Otp.findOne({
+      email: req.body.nitrMail,
       code: req.body.otpCode,
     });
 
@@ -156,32 +154,31 @@ router.post("/auth/otp-verify", async (req, res) => {
       let currentTime = new Date().getTime();
       let diff = data.expireIn - currentTime;
       if (diff < 0) {
-        res.send("Otp expired");
-        return;
+        return res.send("Otp expired");
       } else {
-        let user = await User.findOne({ nitrMail: req.query.valid });
+        let user = await User.findOne({ nitrMail: req.body.nitrMail });
 
         if (user) {
           user.paidStatus = true;
           user.save();
-          res
-            .status(200)
-            .send("Your Zimbra mail was successfully verified.Thank You!")
-            .redirect("https://vriddhinitr.com/");
-          return;
+          return (
+            res
+              .status(200)
+              // .send("Your Zimbra mail was successfully verified.Thank You!")
+              .redirect("https://vriddhinitr.com/")
+          );
         } else {
-          res.status(400).send("Wrong OTP");
-          return;
+          return res.status(400).send("Wrong OTP");
         }
       }
     } else {
-      res.status(400).json({
+      return res.status(400).json({
         status: "OTP verification failed",
         message: err,
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       status: "OTP verification failed",
       message: err,
     });
