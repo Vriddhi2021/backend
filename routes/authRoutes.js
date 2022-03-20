@@ -55,7 +55,7 @@ router.get("/login/failed", (req, res) => {
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    successRedirect: "https://www.vriddhinitr.com//User/Register",
+    successRedirect: "https://www.vriddhinitr.com/User/Register",
     failureRedirect: "",
   })
 );
