@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session");
 const passport = require("passport");
 const eventRoutes = require("./routes/eventRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -17,10 +18,21 @@ const app = express();
 
 // Middlewares
 app.use(morgan("dev"));
-app.use(cors());
+// app.use(cors({ origin: "*" }));
+app.use(
+  cors({
+    origin: "http://localhost:3001",
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true,
+  })
+);
+app.use(
+  cookieSession({ name: "session", keys: ["lama"], maxAge: 24 * 60 * 60 * 100 })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use(passport.initialize());
+app.use(passport.session());
 
 mongoose
   .connect(process.env.DB, {

@@ -2,24 +2,26 @@ const router = require("express").Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-router.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "https://vriddhinitr.com/",
-  }),
-  async (req, res) => {
+router.get("/login/success", async (req, res) => {
+  if (req.user) {
     let user = {
       name: req.user.name.givenName,
       email: req.user._json.email,
       provider: req.user.provider,
       googleId: req.user.id,
     };
-
+    const id = req.user._json.email;
+    let idstr = JSON.stringify(id)
+      .replace("@gmail.com", "")
+      .split('"')
+      .join("")
+      .toLowerCase();
     let token = jwt.sign(
       {
         data: user,
@@ -28,19 +30,40 @@ router.get(
       { expiresIn: "30d" }
     ); // expires in 30 days
     console.log(token);
-    res.cookie("jwt", `BEARER ${token}`).cookie("uniqueid", `${(req.user._json.email).replace("@gmail.com", "").split('"').join("").toLowerCase()}`);
     const currentuser = await User.findOne({ googleId: user.googleId });
-    if (!currentuser) {
-      res.redirect("https://vriddhinitr.com/User/Register");
-    } else {
-      // res.redirect(`"/User/"+${currentuser.uniqueId}`);
-      res.redirect("https://vriddhinitr.com/");
+    let userFound = false;
+    if (currentuser) {
+      userFound = true;
     }
+    res.status(200).json({
+      success: true,
+      message: "successfull",
+      jwt: `BEARER ${token}`,
+      user: req.user,
+      userid:idstr
+    });
   }
+});
+
+router.get("/login/failed", (req, res) => {
+  res.status(401).json({
+    success: false,
+    message: "failure",
+  });
+});
+
+router.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "http://localhost:3001/User/Register",
+    failureRedirect: "http://localhost:3000/auth/login/failed",
+  })
 );
 
 router.get("/signout", (req, res) => {
-  res.clearCookie("jwt").sendStatus(200);
+  // res.clearCookie("jwt").sendStatus(200);
+  req.logOut();
+  res.redirect("http://localhost:3001/");
 });
 
 module.exports = router;
