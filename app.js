@@ -21,7 +21,7 @@ app.use(morgan("dev"));
 // app.use(cors({ origin: "*" }));
 app.use(
   cors({
-    origin: "https://www.vriddhinitr.com",
+    origin: "*",
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
