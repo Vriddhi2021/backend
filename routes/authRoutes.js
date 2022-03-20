@@ -55,15 +55,15 @@ router.get("/login/failed", (req, res) => {
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    successRedirect: "http://localhost:3001/User/Register",
-    failureRedirect: "http://localhost:3000/auth/login/failed",
+    successRedirect: "https://www.vriddhinitr.com//User/Register",
+    failureRedirect: "",
   })
 );
 
 router.get("/signout", (req, res) => {
   // res.clearCookie("jwt").sendStatus(200);
   req.logOut();
-  res.redirect("http://localhost:3001/");
+  res.redirect("https://www.vriddhinitr.com");
 });
 
 module.exports = router;
