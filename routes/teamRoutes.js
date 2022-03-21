@@ -13,9 +13,9 @@ router.get("/", async (req, res) => {
             data: allteams
             });
     }catch(err){
-        res.status(400).json({
-        status: "Failed to fetch all Teams",
-        message: err
+        res.status(200).json({
+        message: "Failed to fetch all Teams",
+        // message: err
         })
     }
     
@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
 } );
 
 //To register a new Team.
-router.post("/Register", isAuthenticated, async (req, res) => {
+router.post("/Register", async (req, res) => {
 
     try{
         const eventid = req.body.eventId;
@@ -31,22 +31,22 @@ router.post("/Register", isAuthenticated, async (req, res) => {
         
         for(let i = 0 ; i < teamMembers.length ; i++) //Don't replace this with forEach
         {
-            const currMemberinDB = await User.findOne({uniqueId : teamMembers[i]});
+            const currMemberinDB = await User.findOne({uniqueId : teamMembers[i].toLowerCase()});
             if(!currMemberinDB){
-                return res.status(404).json({
-                   status: `${teamMembers[i]} has not yet registered for Vriddhi`,
+                return res.status(200).json({
+                   message: `${teamMembers[i]} has not yet registered for Vriddhi`,
                 });
             }
 
             if(currMemberinDB.paidStatus === false){
-                return res.status(404).json({
-                    status: `${teamMembers[i]} has not yet paid the registeration Fees for Vriddhi`
+                return res.status(200).json({
+                    message: `${teamMembers[i]} has not yet paid the registeration Fees for Vriddhi`
                 });
             }
             const participatedEvents = Array.from(currMemberinDB.participatedEvents);
             if(participatedEvents && participatedEvents.find( element => element === eventid)){
-                return res.status(404).json({
-                    status: `${teamMembers[i]} has already registered in a Team for this event`
+                return res.status(200).json({
+                    message: `${teamMembers[i]} has already registered in a Team for this event`
                 });
             }
         }
@@ -74,16 +74,16 @@ router.post("/Register", isAuthenticated, async (req, res) => {
         session.endSession();
 
         res.status(200).json({
-        status: "Teams Registeration was Successful",
+        message: "Teams Registeration was Successful",
             data: {
                 team: newTeam,
             }
             });
     }catch(err){
         console.log(err);
-        res.status(400).json({
-        status: "Teams Registeration was Unsuccessful",
-        message: err
+        res.status(200).json({
+        message: "Teams Registeration was Unsuccessful",
+        // message: err
         })
     }
 });
