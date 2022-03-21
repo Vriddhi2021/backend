@@ -27,13 +27,13 @@ const userSchema = new mongoose.Schema({
   },
   isNitr: {
     type: Boolean,
-    required: [true, "IsNitr is required"],
+    // required: [true, "IsNitr is required"],
     default: false,
   },
   nitrMail: {
     type: String,
     trim: true,
-    // unique: true,
+    unique: true,
   },
   participatedEvents: {
     type: Array,
