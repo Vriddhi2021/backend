@@ -164,7 +164,7 @@ router.post("/auth/otp-verify2", async (req, res) => {
       if (diff < 0) {
         return res.send("Otp expired");
       } else {
-        let user = await User.findOne({ nitrMail: req.body.nitrMail });
+        let user = await User.findOne({ nitrMail: req.body.nitrMail.toLowerCase() });
 
         if (user) {
           user.paidStatus = true;
