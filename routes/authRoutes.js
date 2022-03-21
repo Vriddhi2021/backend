@@ -39,7 +39,7 @@ router.get("/login/success", async (req, res) => {
       success: true,
       message: "successfull",
       jwt: `BEARER ${token}`,
-      user: req.user,
+      userFound: userFound,
       userid:idstr
     });
   }
