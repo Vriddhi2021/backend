@@ -28,8 +28,8 @@ router.post("/Register", isAuthenticated, async (req, res) => {
       googleId: req.user.data.googleId,
     });
     if (possibleuser) {
-      return res.status(400).json({
-        status: "Unsuccessful",
+      return res.status(200).json({
+        // status: "Unsuccessful",
         message: "gmail already exists",
       });
       // .redirect("https://vriddhinitr.com/");
@@ -54,8 +54,8 @@ router.post("/Register", isAuthenticated, async (req, res) => {
     //   res.redirect("https://vriddhinitr.com/");
     // }
   } catch (err) {
-    return res.status(400).json({
-      status: "Unsuccessful",
+    return res.status(200).json({
+      // status: "Unsuccessful",
       message: err,
     });
     // .redirect("https://vriddhinitr.com/register");
@@ -72,14 +72,14 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
       }
     );
     res.status(200).json({
-      status: "success",
+      message: "success",
       data: {
         user,
       },
     });
   } catch (err) {
-    res.status(404).json({
-      status: "fail",
+    res.status(200).json({
+      // status: "fail",
       message: err,
     });
   }
@@ -113,33 +113,33 @@ router.post("/auth/otp-verify", async (req, res) => {
       transporter.sendMail(mailOptions, async function (error, info) {
         if (error) {
           console.log(error);
-          return res.status(400).json({
-            status: "Failed to send email",
-            message: error,
+          return res.status(200).json({
+            message: "Failed to send email",
+            // message: error,
           });
         } else {
           console.log("Email sent: " + info.response);
           return res.status(200).json({
-            status:
+            message:
               "OTP successfully sent to your Email. Please check your zimbra mail",
           });
         }
       });
     } else {
-      return res.status(400).json({
-        status: "INVALID EMAIL",
-        message: err,
+      return res.status(200).json({
+        message: "INVALID EMAIL",
+        // message: err,
       });
     }
   } catch (err) {
     return (
       res
-        .status(400)
-        // .json({
-        //   status: "No email found",
-        //   message: err,
-        // })
-        .redirect("https://vriddhinitr.com/")
+        .status(200)
+        .json({
+          message: "No email found",
+          // message: err,
+        })
+        // .redirect("https://vriddhinitr.com/")
     );
   }
 });
@@ -164,23 +164,30 @@ router.post("/auth/otp-verify2", async (req, res) => {
           return (
             res
               .status(200)
+              .json({
+                message: "OTP verification failed",
+                // message: err,
+              })
               // .send("Your Zimbra mail was successfully verified.Thank You!")
-              .redirect("https://vriddhinitr.com/")
+              // .redirect("https://vriddhinitr.com/")
           );
         } else {
-          return res.status(400).send("Wrong OTP");
+          return res.status(200).json({
+            message: "Wrong OTP",
+            // message: err,
+          });
         }
       }
     } else {
-      return res.status(400).json({
-        status: "OTP verification failed",
-        message: err,
+      return res.status(200).json({
+        message: "OTP verification failed",
+        // message: err,
       });
     }
   } catch (err) {
-    return res.status(400).json({
-      status: "OTP verification failed",
-      message: err,
+    return res.status(200).json({
+      message: "OTP verification failed",
+      // message: err,
     });
   }
 });
