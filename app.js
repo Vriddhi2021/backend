@@ -19,8 +19,7 @@ const app = express();
 // Middlewares
 
 
-var allowedOrigins = ['http://localhost:3001',
-                      'https://vriddhinitr.com'];
+var allowedOrigins = ['http://localhost:3001', 'https://www.vriddhinitr.com'];
 const corsOptions = {
   origin : function(origin,callback) {
     if(allowedOrigins.indexOf(origin) !== -1 || !origin){
