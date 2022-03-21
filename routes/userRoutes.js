@@ -42,9 +42,17 @@ router.post("/Register", isAuthenticated, async (req, res) => {
       req.body
     );
     const newUser = await User.create(newuser);
-    return res.status(200).json({
-      message: "Successfully Registered",
-    });
+    if(newUser){
+      return res.status(200).json({
+        message: "Successfully Registered",
+      });
+    }
+    else{
+      return res.status(200).json({
+        message: "NOT Registered",
+      });
+    }
+    
     // if (newUser.isNitr && newUser.nitrMail) {
     //   var string = newUser.nitrMail;
     //   res.redirect(
