@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   },
   isNitr: {
     type: Boolean,
-    // required: [true, "IsNitr is required"],
+    required: [true, "IsNitr is required"],
     default: false,
   },
   nitrMail: {
