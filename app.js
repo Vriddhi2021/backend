@@ -21,6 +21,8 @@ const app = express();
 
 var allowedOrigins = ['http://localhost:3001', 'https://www.vriddhinitr.com'];
 const corsOptions = {
+  methods: "GET,POST,PUT,DELETE",
+  credentials: true,
   origin : function(origin,callback) {
     if(allowedOrigins.indexOf(origin) !== -1 || !origin){
       callback(null,true);
