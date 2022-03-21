@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
   nitrMail: {
     type: String,
     trim: true,
-    unique: true,
+    // unique: true,
   },
   participatedEvents: {
     type: Array,
