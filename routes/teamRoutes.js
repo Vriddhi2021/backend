@@ -31,7 +31,7 @@ router.post("/Register", async (req, res) => {
         
         for(let i = 0 ; i < teamMembers.length ; i++) //Don't replace this with forEach
         {
-            const currMemberinDB = await User.findOne({uniqueId : teamMembers[i]});
+            const currMemberinDB = await User.findOne({uniqueId : teamMembers[i].toLowerCase()});
             if(!currMemberinDB){
                 return res.status(200).json({
                    message: `${teamMembers[i]} has not yet registered for Vriddhi`,
