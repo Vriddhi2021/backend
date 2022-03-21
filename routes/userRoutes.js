@@ -4,10 +4,10 @@ const User = require("../models/userModel");
 const Otp = require("../models/otpModel");
 const nodemailer = require("nodemailer");
 
-router.get("/:id", isAuthenticated, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const user = await User.findOne({ googleId: req.user.data.googleId });
+    const user = await User.findOne({ uniqueId: id });
 
     const { isNitr, __v, _id, googleId, ...other } = user._doc;
     res.status(200).json(other);
