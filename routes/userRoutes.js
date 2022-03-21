@@ -129,7 +129,7 @@ router.post("/auth/otp-verify", async (req, res) => {
           console.log("Email sent: " + info.response);
           return res.status(200).json({
             message:
-              "OTP successfully sent to your Email. Please check your zimbra mail",
+              "OTP successfully sent to your Email. Please check your zimbra mail. It generally takes 2 minutes",
           });
         }
       });
@@ -173,7 +173,7 @@ router.post("/auth/otp-verify2", async (req, res) => {
             res
               .status(200)
               .json({
-                message: "OTP verification failed",
+                message: "Your Zimbra mail was successfully verified.Thank You!",
                 // message: err,
               })
               // .send("Your Zimbra mail was successfully verified.Thank You!")
