@@ -9,7 +9,7 @@ router.get("/:id", async (req, res) => {
     const id = req.params.id;
     const user = await User.findOne({ uniqueId: id });
 
-    const { isNitr, __v, _id, googleId, ...other } = user._doc;
+    const { __v, _id, googleId, ...other } = user._doc;
     res.status(200).json(other);
   } catch (err) {
     res.status(500).json(err);
