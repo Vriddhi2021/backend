@@ -106,8 +106,8 @@ router.post("/auth/otp-verify", async (req, res) => {
       var transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: "jb9086699@gmail.com",
-          pass: "Password##1234",
+          user: ,
+          pass: ,
         },
       });
 
